@@ -1,7 +1,5 @@
 local M = {}
-
 local globals = {}
-
 local path = vim.fn.stdpath("data") .. "/spearmint.json"
 
 local function save()
@@ -53,13 +51,10 @@ end
 
 function M.setup(opts)
   opts = opts or {}
-
   load()
-
   vim.api.nvim_create_autocmd({ "BufLeave" }, {
     callback = update_pos
   })
-
   -- so that latest cursor saved on exit
   vim.api.nvim_create_autocmd("BufWinLeave", {
     callback = function()
@@ -67,7 +62,6 @@ function M.setup(opts)
       save()
     end
   })
-
   vim.keymap.set("n", opts.set_key or "m", set_mark)
   vim.keymap.set("n", opts.jump_key or "'", jump)
 end
