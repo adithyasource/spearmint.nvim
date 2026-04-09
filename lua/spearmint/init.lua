@@ -24,20 +24,21 @@ local function load()
 end
 
 local function set_mark()
-  local char = vim.fn.getcharstr()
-  globals[char] = {
-    filePath = vim.api.nvim_buf_get_name(0),
+  local filePath = vim.api.nvim_buf_get_name(0)
+  -- file path as key so that autocmd stays o(1)
+  globals[filePath] = {
+    char = vim.fn.getcharstr(),
     pos = vim.api.nvim_win_get_cursor(0)
   }
   save()
 end
 
 local function jump()
-  local char = vim.fn.getcharstr()
-  local jumpTo = globals[char]
-  if jumpTo then
-    vim.cmd("edit " .. jumpTo.filePath)
-    vim.api.nvim_win_set_cursor(0, jumpTo.pos)
+  for filePath, data in pairs(globals) do
+    if data.char == vim.fn.getcharstr() then
+      vim.cmd("edit " .. filePath)
+      vim.api.nvim_win_set_cursor(0, data.pos)
+    end
   end
 end
 
@@ -49,11 +50,8 @@ function M.setup(opts)
   vim.api.nvim_create_autocmd({ "CursorMoved", "BufLeave" }, {
     callback = function()
       local filePath = vim.api.nvim_buf_get_name(0)
-      local pos = vim.api.nvim_win_get_cursor(0)
-      for keyCharacter, jumpTo in pairs(globals) do
-        if jumpTo.filePath == filePath then
-          globals[keyCharacter].pos = pos
-        end
+      if globals[filePath] then
+        globals[filePath].pos = vim.api.nvim_win_get_cursor(0)
       end
     end
   })
