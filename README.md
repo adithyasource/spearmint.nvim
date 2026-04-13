@@ -13,7 +13,7 @@ or add `adithyasource/spearmint` to your favourite package manager of choice
 
 or install it manually
   ```bash
-  git clone https://github.com/adithyasource/spearmint ~/.config/nvim/pack/nvim/start/spearmint
+  git clone https://github.com/adithyasource/spearmint.nvim ~/.config/nvim/pack/nvim/start/spearmint.nvim
   ```
 
 run this to enable its functionality
