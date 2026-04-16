@@ -55,7 +55,11 @@ local function jump()
     return
   end
 
-  if vim.api.nvim_buf_is_valid(toJump.termBuf) then
+  -- checking if the toterm is actually a terminal in the current session
+  -- if it isnt and its still a valid terminal, that means nvim reused the
+  -- id or didnt flush it out of memory
+  -- idk why had to do this cause windows didnt work for some reason ¯\(ツ)/¯
+  if vim.api.nvim_buf_is_valid(toJump.termBuf) and vim.bo[toJump.termBuf].buftype == "terminal" then
     vim.api.nvim_set_current_buf(toJump.termBuf)
     return
   end
