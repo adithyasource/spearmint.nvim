@@ -2,6 +2,9 @@ local M = {}
 local globals = {}
 local path = vim.fn.stdpath("data") .. "/spearmint.json"
 
+local function notify(msg)
+  vim.notify("spearmint: " .. msg, vim.log.levels.INFO)
+end
 
 local function save()
   local file = io.open(path, "w")
@@ -53,8 +56,13 @@ local function jump()
   local projectPath = vim.fn.getcwd()
   local char = vim.fn.getcharstr()
   local toJump = globals[projectPath][char]
+  local curFilePath = vim.api.nvim_buf_get_name(0)
+
+  if toJump == nil then notify("no mark set") end
 
   if not toJump then return end
+
+  if curFilePath == toJump.filePath then return end
 
   if toJump.type == "file" then
     vim.cmd("edit " .. vim.fn.fnameescape(toJump.filePath))
