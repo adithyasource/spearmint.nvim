@@ -1,5 +1,6 @@
 local M = {}
 local globals = {}
+local liveTerminals = {}
 local path = vim.fn.stdpath("data") .. "/spearmint.json"
 
 local function notify(msg)
@@ -39,8 +40,10 @@ local function set_mark()
   if vim.bo.buftype == 'terminal' then
     globals[projectPath][char] = {
       type = "term",
+    }
+    liveTerminals[char] = {
       pos = vim.api.nvim_win_get_cursor(0),
-      termBuf = vim.api.nvim_get_current_buf(),
+      buf = vim.api.nvim_get_current_buf(),
     }
   else
     globals[projectPath][char] = {
@@ -73,18 +76,20 @@ local function jump()
   -- checking if the toterm is actually a terminal in the current session
   -- if it isnt and its still a valid terminal, that means nvim reused the
   -- id or didnt flush it out of memory
-  -- idk why had to do this cause windows didnt work for some reason ¯\(ツ)/¯
-  if vim.api.nvim_buf_is_valid(toJump.termBuf) and vim.bo[toJump.termBuf].buftype == "terminal" then
-    vim.api.nvim_set_current_buf(toJump.termBuf)
+  -- idk why; had to do this cause windows didnt work for some reason ¯\(ツ)/¯
+  local live = liveTerminals[char]
+
+  if live and vim.api.nvim_buf_is_valid(live.buf) and vim.bo[live.buf].buftype == "terminal" then
+    vim.api.nvim_set_current_buf(live.buf)
     return
   end
 
+  -- new buffer
   vim.cmd("terminal")
 
-  globals[projectPath][char] = {
-    type = "term",
+  liveTerminals[char] = {
     pos = vim.api.nvim_win_get_cursor(0),
-    termBuf = vim.api.nvim_get_current_buf(),
+    buf = vim.api.nvim_get_current_buf(),
   }
 end
 
