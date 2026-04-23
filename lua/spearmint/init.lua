@@ -39,10 +39,10 @@ local function update_pos()
   if not pathData then
     return
   end
-  local filePath = vim.api.nvim_buf_get_name(0)
+  local relFilePath = vim.fn.expand("%:.")
   local pos = vim.api.nvim_win_get_cursor(0)
   for char, toJumpData in pairs(pathData) do
-    if toJumpData.filePath == filePath then
+    if toJumpData.relFilePath == relFilePath then
       globals[projectPath][char].pos = pos
     end
   end
@@ -64,7 +64,7 @@ Spearmint.set_mark = function()
     globals[projectPath][char] = {
       type = "file",
       pos = vim.api.nvim_win_get_cursor(0),
-      filePath = vim.api.nvim_buf_get_name(0),
+      relFilePath = vim.fn.expand("%:."),
     }
   end
   save()
@@ -74,16 +74,15 @@ Spearmint.jump = function()
   local projectPath = vim.fn.getcwd()
   local char = vim.fn.getcharstr()
   local toJump = globals[projectPath][char]
-  local curFilePath = vim.api.nvim_buf_get_name(0)
 
   if toJump == nil then notify("no mark set") end
 
   if not toJump then return end
 
-  if curFilePath == toJump.filePath then return end
+  if vim.fn.expand("%:.") == toJump.relFilePath then return end
 
   if toJump.type == "file" then
-    vim.cmd("edit " .. vim.fn.fnameescape(toJump.filePath))
+    vim.cmd("edit " .. toJump.relFilePath)
     vim.api.nvim_win_set_cursor(0, toJump.pos)
     return
   end
