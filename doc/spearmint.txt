@@ -1,0 +1,52 @@
+*spearmint.txt*     project marks for files and terminals
+
+spearmint is no bs upgrade to default neovim marks
+
+- marks are scoped to the current working directory
+- file marks remember your latest cursor position
+- terminal marks jump back to a live terminal buffer
+- marks are saved in: >
+    stdpath('data') .. '/spearmint.json'
+<
+
+==============================================================================
+INSTALL                                                      *spearmint-install*
+
+use your package manager, then set keymaps for the two actions.
+
+make sure to set it up: >lua
+  require('spearmint').setup()
+>
+
+example: >lua
+  vim.keymap.set('n', 'm', function() Spearmint.set_mark() end)
+  vim.keymap.set('n', "'", function() Spearmint.jump() end)
+
+
+==============================================================================
+USAGE                                                          *spearmint-usage*
+
+1. press your "set mark" mapping.
+2. type any character.
+3. later, press your "jump" mapping and type the same character.
+
+if the mark points to a file, spearmint opens it and restores the cursor.
+if it points to a terminal, spearmint jumps to the live terminal buffer.
+
+marks are stored per project directory, so the same character can mean
+something different in another cwd.
+
+==============================================================================
+API                                                              *spearmint-api*
+
+`spearmint.set_mark()`
+    Save the current file or terminal under the next typed character.
+
+`spearmint.jump()`
+    Jump to the mark for the next typed character.
+
+`spearmint.setup()`
+    Loads saved marks and installs autocommands used to keep positions updated.
+
+
+vim:tw=78:ts=8:noet:ft=help:norl:
