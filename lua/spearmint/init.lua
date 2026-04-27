@@ -73,7 +73,7 @@ end
 Spearmint.jump = function()
   local projectPath = vim.fn.getcwd()
   local char = vim.fn.getcharstr()
-  local toJump = globals[projectPath][char]
+  local toJump = globals[projectPath] and globals[projectPath][char]
 
   if toJump == nil then notify("no mark set") end
 
